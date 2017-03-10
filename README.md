@@ -11,6 +11,18 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
 
+## Migrations
+
+Create a new migration configuration
+```
+mix ecto.gen.migration some_name
+```
+
+Apply changes
+```
+mix ecto.migrate
+```
+
 ## Learn more
 
   * Official website: http://www.phoenixframework.org/
