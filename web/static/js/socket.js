@@ -1,4 +1,4 @@
-import {Socket} from 'phoenix'
+import { Socket } from 'phoenix'
 
 let socket = new Socket('/socket', {params: {token: window.userToken}})
 
@@ -15,23 +15,35 @@ const createSocket = (topicId) => {
       console.log('Unable to join', resp)
     })
 
+  channel.on(`comments:${topicId}:new`, renderComment)
+
   document.querySelector('button').addEventListener('click', () => {
     const content = document.querySelector('textarea').value
 
     channel.push('comment:add', { content })
   })
-}
 
-function renderComments (comments) {
-  const renderComents = comments.map(comment => {
+  function renderComments (comments) {
+    const renderComents = comments.map(comment => {
+      return commentTemplate(comment)
+    })
+
+    document.querySelector('.collection').innerHTML = renderComents.join('')
+  }
+
+  function renderComment (event) {
+    const renderComment = commentTemplate(event.comment)
+
+    document.querySelector('.collection').innerHTML += renderComment
+  }
+
+  function commentTemplate (comment) {
     return `
       <li class="collection-item">
         ${comment.content}
       </li>
       `
-  })
-
-  document.querySelector('.collection').innerHTML = renderComents.join('')
+  }
 }
 
 window.createSocket = createSocket
