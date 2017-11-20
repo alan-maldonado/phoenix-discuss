@@ -1,14 +1,14 @@
 import { Socket } from 'phoenix'
-
-let socket = new Socket('/socket', {params: {token: window.userToken}})
+let socket = new Socket('/socket', { params: { token: window.userToken } })
 
 socket.connect()
 
-const createSocket = (topicId) => {
+const createSocket = topicId => {
   let channel = socket.channel(`comments:${topicId}`, {})
   channel
     .join()
     .receive('ok', resp => {
+      console.log(resp)
       renderComments(resp.comments)
     })
     .receive('error', resp => {
@@ -17,33 +17,34 @@ const createSocket = (topicId) => {
 
   channel.on(`comments:${topicId}:new`, renderComment)
 
-  document.querySelector('button').addEventListener('click', () => {
+  document.querySelector('button').addEventListener('click', (e) => {
+    e.preventDefault()
     const content = document.querySelector('textarea').value
 
-    channel.push('comment:add', { content })
+    channel.push('comment:add', { content: content })
+  })
+}
+
+function renderComments (comments) {
+  const renderedComments = comments.map(comment => {
+    return commentTemplate(comment)
   })
 
-  function renderComments (comments) {
-    const renderComents = comments.map(comment => {
-      return commentTemplate(comment)
-    })
+  document.querySelector('.collection').innerHTML = renderedComments.join('')
+}
 
-    document.querySelector('.collection').innerHTML = renderComents.join('')
-  }
+function renderComment (event) {
+  const renderedComment = commentTemplate(event.comment)
 
-  function renderComment (event) {
-    const renderComment = commentTemplate(event.comment)
+  document.querySelector('.collection').innerHTML += renderedComment
+}
 
-    document.querySelector('.collection').innerHTML += renderComment
-  }
-
-  function commentTemplate (comment) {
-    return `
-      <li class="collection-item">
-        ${comment.content}
-      </li>
-      `
-  }
+function commentTemplate (comment) {
+  return `
+    <li class="collection-item">
+      ${comment.content}
+    </li>
+  `
 }
 
 window.createSocket = createSocket
