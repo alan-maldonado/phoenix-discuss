@@ -1,4 +1,4 @@
-<%= @topic.title %>
+<h5><%= @topic.title %></h5>
 <form class="input-field">
   <textarea class="materialize-textarea"></textarea>
   <button class="btn">Add Comment</button>
